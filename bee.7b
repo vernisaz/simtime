@@ -1,0 +1,9 @@
+# simtime build script
+
+crate  =simtime
+main=lib
+dep_crates=[]
+common =../simscript/comm-crate.7b:file
+crate_dir=../rusthub/src/rust/crates
+display(building ${crate})
+include(common);
