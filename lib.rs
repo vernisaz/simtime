@@ -4,6 +4,7 @@ use std::process::Command;
 use std::os::raw::c_int;
 use std::os::raw::c_char;
 use std::os::raw::c_long;
+use std::os::raw::c_longlong;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -32,8 +33,14 @@ pub const DAYS_OF_WEEK: &[&str] = &[
         pub tm_zone: *const c_char,
     }
 
+   #[cfg(target_os = "linux")]
    extern "C" {
         fn localtime(time: *const c_long) -> *mut tm;
+    }
+    
+    #[cfg(target_os = "windows")]
+    extern "C" {
+        fn _localtime64(time: *const c_longlong) -> *mut tm;
     }
     
 
@@ -107,6 +114,7 @@ pub fn get_local_timezone_offset() -> i16 {
     get_local_timezone_offset_dst().0
 }
 
+#[cfg(target_os = "linux")]
 pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     let now = 
     SystemTime::now()
@@ -117,6 +125,21 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     let tz_offset = unsafe {(*local_time).tm_gmtoff};
     ((tz_offset / 60) as i16, unsafe {(*local_time).tm_isdst != 0})
 }
+
+#[cfg(target_os = "windows")]
+pub fn get_local_timezone_offset_dst() -> (i16, bool) {
+    let now =SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+    let local_time = unsafe { _localtime64(&now) };
+    let gmt_time = get_datetime(1970, now as _);
+    let off_min = -((gmt_time.3 * 60 + gmt_time.4) as i32 )
+      + ((unsafe {(*local_time).tm_hour} - 24) * 60 + unsafe {(*local_time).tm_min});
+      
+    (off_min as _, unsafe {(*local_time).tm_isdst > 0})
+}
+  
 
 #[inline]
 fn year_len(year: u32) -> u32 {
