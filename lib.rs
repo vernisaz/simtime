@@ -134,8 +134,16 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
         .as_secs() as i64;
     let local_time = unsafe { _localtime64(&now) };
     let gmt_time = get_datetime(1970, now as _);
-    let off_min = -((gmt_time.3 * 60 + gmt_time.4) as i32 )
-      + ((unsafe {(*local_time).tm_hour} - 24) * 60 + unsafe {(*local_time).tm_min});
+    let local_day = unsafe {(*local_time).tm_mday};
+    let gmt_day = gmt_time.2 as i32;
+    let mut day_diff:i32 = gmt_day - local_day;
+    if day_diff > 1 {
+        day_diff = -1;
+    } else if day_diff < -1 {
+        day_diff = 1;
+    }
+    let off_min = -((gmt_time.3 as i32 + 24 * day_diff) * 60 + gmt_time.4 as i32)  
+      + ((unsafe {(*local_time).tm_hour} - 0) * 60 + unsafe {(*local_time).tm_min});
       
     (off_min as _, unsafe {(*local_time).tm_isdst > 0})
 }
