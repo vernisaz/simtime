@@ -132,6 +132,7 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs() as i64;
+    // https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/localtime-localtime32-localtime64?view=msvc-170
     let local_time = unsafe { _localtime64(&now) };
     let gmt_time = get_datetime(1970, now as _);
     let local_day = unsafe {(*local_time).tm_mday};
