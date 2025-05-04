@@ -1,12 +1,12 @@
-use std::convert::TryInto;
-use std::process::Command;
+use std::{process::Command,
 
-use std::os::raw::c_int;
-use std::os::raw::c_char;
-use std::os::raw::c_long;
-use std::os::raw::c_longlong;
+os::raw::{c_int,
+c_char,
+c_long,
+//c_longlong
+},
 
-use std::time::{SystemTime, UNIX_EPOCH};
+time::{SystemTime, UNIX_EPOCH}};
 
 pub const DAYS_OF_WEEK: &[&str] = &[
     "Thursday",
@@ -55,7 +55,7 @@ pub fn get_datetime(epoch_year: u32, duration_sec: u64) -> (u32, u32, u32, u32, 
     let hour_in_day = mins_in_day / 60;
     let min_in_hour = mins_in_day % 60;
     let mut curr_year = epoch_year;
-    let remaining_days_week: u8 = (days % 7).try_into().unwrap();
+    let remaining_days_week: u8 = (days % 7) as u8;
 
     if days > year_len(curr_year) {
         loop {
@@ -90,7 +90,7 @@ pub fn get_datetime(epoch_year: u32, duration_sec: u64) -> (u32, u32, u32, u32, 
     )
 }
 
-const ZERO: u8 = '0' as u8;
+const ZERO: u8 = b'0';
 pub fn get_local_timezone_offset_ext() -> i16 {
     // returns 0 in a case of exception
     match Command::new("date").arg("+%z").output() {

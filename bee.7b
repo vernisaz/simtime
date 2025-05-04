@@ -7,7 +7,7 @@ comp opts=[]
 test file=test
 common =..${~/~}simscript${~/~}comm-crate.7b:file
 common_test =..${~/~}simscript${~/~}comm-test.7b:file
-crate_dir=..${~/~}crates
+crate_dir=../rusthub/src/rust${~/~}crates
 
 include(common);
 
