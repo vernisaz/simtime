@@ -33,7 +33,7 @@ pub const DAYS_OF_WEEK: &[&str] = &[
         pub tm_zone: *const c_char,
     }
 
-   #[cfg(target_os = "linux")]
+   #[cfg(unix)]
    extern "C" {
         fn localtime(time: *const c_long) -> *mut tm;
     }
@@ -114,7 +114,7 @@ pub fn get_local_timezone_offset() -> i16 {
     get_local_timezone_offset_dst().0
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     let now = 
     SystemTime::now()
