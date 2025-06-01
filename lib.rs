@@ -43,6 +43,7 @@ pub const DAYS_OF_WEEK: &[&str] = &[
         fn _localtime64(time: *const c_longlong) -> *mut tm;
     }
     
+pub const MON_DAYS : [u32;12] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 pub fn get_datetime(epoch_year: u32, duration_sec: u64) -> (u32, u32, u32, u32, u32, u32, u8) {
     // year, month, day, hour, minute, second, a day in a week after epoch day
@@ -112,6 +113,31 @@ pub fn get_local_timezone_offset_ext() -> i16 {
 
 pub fn get_local_timezone_offset() -> i16 {
     get_local_timezone_offset_dst().0
+}
+
+pub fn seconds_from_epoch(epoch: u32, year: u32, month: u32, day: u32, hour: u32, minute: u32, second: u32) -> Result<u64,&'static str> {
+    if epoch > year { return Err("year too early") }
+    if month < 1 || month > 12 { return Err("month out of range 1..12") }
+    let mut full_years = 0u64;
+    for y in epoch..year {
+        full_years += year_len(y) as u64
+    }
+    for m in 1..month {
+        full_years += MON_DAYS[(m as usize)-1usize] as u64;
+        if m == 2 && year_len(year) == 366 {
+            full_years += 1
+        }
+    }
+    if day < 1 || day > MON_DAYS[(month as usize)-1] + if month == 2 && year_len(year) == 366 {1} else {0} { return Err("day out of month length") }
+    full_years += (day as u64) - 1;
+    let mut seconds = full_years * 24 * 60 * 60;
+    if hour > 23 { return Err("the hour out of the day length") }
+    seconds += (hour as u64) * 60 * 60;
+    if minute > 59 { return Err("the minute out of the hour length") }
+    seconds += (minute as u64) * 60;
+    if second > 59 { return Err("the second out of the minute length") }
+    seconds += second as u64;
+    Ok(seconds)
 }
 
 #[cfg(unix)]
