@@ -8,6 +8,9 @@ c_long,
 
 time::{SystemTime, UNIX_EPOCH}};
 
+#[cfg(target_os = "windows")]
+use std::ffi::c_longlong;
+
 pub const DAYS_OF_WEEK: &[&str] = &[
     "Thursday",
     "Friday",
