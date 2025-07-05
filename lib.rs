@@ -33,9 +33,14 @@ pub const DAYS_OF_WEEK: &[&str] = &[
         pub tm_zone: *const c_char,
     }
 
-   #[cfg(unix)]
+   #[cfg(all(unix, target_pointer_width = "64"))]
    extern "C" {
         fn localtime(time: *const c_long) -> *mut tm;
+    }
+    
+    #[cfg(all(unix, target_pointer_width = "32"))]
+    extern "C" {
+        fn localtime(time: *const c_longlong) -> *mut tm;
     }
     
     #[cfg(target_os = "windows")]
