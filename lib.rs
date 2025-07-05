@@ -3,11 +3,11 @@ use std::{process::Command,
 os::raw::{c_int,
 c_char,
 c_long,
-//c_longlong
 },
 
 time::{SystemTime, UNIX_EPOCH}};
-
+#[cfg(all(unix, target_pointer_width = "32"))]
+use std::ffi::c_longlong;
 #[cfg(target_os = "windows")]
 use std::ffi::c_longlong;
 
