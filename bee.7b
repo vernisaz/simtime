@@ -1,13 +1,13 @@
 # simtime build script
 
 crate  =simtime
-main=lib
+crate main=lib
 dep_crates=[]
 comp opts=[]
 test file=test
 common =..${~/~}simscript${~/~}comm-crate.7b:file
 common_test =..${~/~}simscript${~/~}comm-test.7b:file
-crate_dir=../rusthub/src/rust${~/~}crates
+crate_dir=..${~/~}crates
 
 include(common);
 
