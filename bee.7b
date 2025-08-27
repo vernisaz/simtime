@@ -2,6 +2,7 @@
 
 crate  =simtime
 crate main=lib
+crate_src=.
 dep_crates=[]
 comp opts=[]
 test file=test
