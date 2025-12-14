@@ -11,6 +11,7 @@ use std::ffi::c_longlong;
 #[cfg(target_os = "windows")]
 use std::ffi::c_longlong;
 
+pub const VERSION: &str = env!("VERSION");
 pub const DAYS_OF_WEEK: &[&str] = &[
     "Thursday",
     "Friday",
