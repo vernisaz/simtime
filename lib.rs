@@ -155,7 +155,7 @@ pub fn seconds_from_epoch(
                     0
                 }
     {
-        return Err("day out of month length");
+        return Err("day out of the month length");
     }
     full_years += (day as u64) - 1;
     let mut seconds = full_years * 24 * 60 * 60;
