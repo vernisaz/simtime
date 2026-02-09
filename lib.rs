@@ -102,11 +102,11 @@ pub fn get_local_timezone_offset_ext() -> i16 {
     // returns 0 in a case of exception
     match Command::new("date").arg("+%z").output() {
         Ok(output) if output.status.success() => {
-            let pos = output.stdout[0] == '+' as u8;
-            let mut hour: i16 = (&output.stdout[1] - ZERO) as i16;
-            hour = hour * 10 + (&output.stdout[2] - ZERO) as i16;
+            let pos = output.stdout[0] == b'+';
+            let mut hour: i16 = (output.stdout[1] - ZERO) as i16;
+            hour = hour * 10 + (output.stdout[2] - ZERO) as i16;
             let mut min: i16 = (output.stdout[3] - ZERO) as i16;
-            min = min * 10 + (&output.stdout[4] - ZERO) as i16;
+            min = min * 10 + (output.stdout[4] - ZERO) as i16;
             if pos {
                 hour * 60 + min
             } else {
@@ -133,7 +133,7 @@ pub fn seconds_from_epoch(
     if epoch > year {
         return Err("year too early");
     }
-    if month < 1 || month > 12 {
+    if !(1..=12).contains(&month) {
         return Err("month out of range 1..12");
     }
     let mut full_years = 0u64;
@@ -212,7 +212,7 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
 
 #[inline]
 fn year_len(year: u32) -> u32 {
-    if (year % 4) == 0 && (year % 100) != 0 || (year % 400) == 0 {
+    if year.is_multiple_of(4) && !year.is_multiple_of(100) || year.is_multiple_of(400) {
         366
     } else {
         365
