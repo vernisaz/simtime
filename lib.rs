@@ -179,11 +179,11 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_millis() as i64;
+        .as_secs() as i64;
     let local_time = unsafe { localtime(&now) };
     let tz_offset = unsafe { (*local_time).tm_gmtoff };
     ((tz_offset / 60) as i16, unsafe {
-        (*local_time).tm_isdst != 0
+        (*local_time).tm_isdst == 1
     })
 }
 
