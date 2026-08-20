@@ -104,7 +104,7 @@ pub fn get_datetime(epoch_year: u32, duration_sec: u64) -> (u32, u32, u32, u32, 
 const ZERO: u8 = b'0';
 /// Get local time zone offset in minutes
 ///
-/// The implementation is based on parsing a result of _date_ command 
+/// The implementation is based on parsing a result of _date_ command
 pub fn get_local_timezone_offset_ext() -> i16 {
     // returns 0 in a case of exception
     match Command::new("date").arg("+%z").output() {
@@ -183,6 +183,17 @@ pub fn seconds_from_epoch(
     }
     seconds += second as u64;
     Ok(seconds)
+}
+
+/// Get local time in seconds since epoch (1970)
+///
+/// get_local_timezone_offset_dst() used to figure out tz offset
+pub fn local_now_secs() -> u64 {
+    (SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs() as i64
+        + (get_local_timezone_offset() * 60i16) as i64) as u64
 }
 
 /// Get local time zone offset in minutes and flag if DST is active
