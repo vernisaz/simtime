@@ -3,6 +3,7 @@ use std::ffi::c_longlong;
 #[cfg(target_os = "windows")]
 use std::ffi::c_longlong;
 use std::{
+    error::Error,
     os::raw::{c_char, c_int, c_long},
     process::Command,
     time::{SystemTime, UNIX_EPOCH},
@@ -234,6 +235,35 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
         + ((unsafe { (*local_time).tm_hour } - 0) * 60 + unsafe { (*local_time).tm_min });
 
     (off_min as _, unsafe { (*local_time).tm_isdst > 0 })
+}
+
+/// Converts a time string in "HH:MM" 24-hour format to "hh:MM AM/PM" 12-hour format.
+///
+/// # Arguments
+/// * `time_24` - A string slice containing the time in 24-hour format.
+///
+/// # Returns
+/// * `Ok((h_12,P)` - The converted time in 12-hour format.
+/// * `Err(String)` - An error message if the input is invalid.
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_24_to_12(0).unwrap().0, 12);
+/// assert_eq!(convert_24_to_12(13).unwrap().0, 1);
+/// ```
+pub fn convert_24_to_12(hour_24: u32) -> Result<(u32, bool), Box<dyn Error>> {
+    // Validate ranges
+    if hour_24 > 23 {
+        return Err("Hour must be 0-23".into());
+    }
+
+    // Convert to 12-hour format
+    let hour_12 = match hour_24 % 12 {
+        0 => 12,
+        h => h,
+    };
+
+    Ok((hour_12, hour_24 > 11))
 }
 
 #[inline]
