@@ -51,6 +51,10 @@ unsafe extern "C" {
 
 pub const MON_DAYS: [u32; 12] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+/// Return duration in seconds from epoch as date and time
+///
+/// # Return
+/// (year,month,day, hour_in_day, min_in_hour, sec_in_min, remaining_days_in_week)
 pub fn get_datetime(epoch_year: u32, duration_sec: u64) -> (u32, u32, u32, u32, u32, u32, u8) {
     // year, month, day, hour, minute, second, a day in a week after epoch day
     let mut mon_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -98,6 +102,9 @@ pub fn get_datetime(epoch_year: u32, duration_sec: u64) -> (u32, u32, u32, u32, 
 }
 
 const ZERO: u8 = b'0';
+/// Get local time zone offset in minutes
+///
+/// The implementation is based on parsing a result of _date_ command 
 pub fn get_local_timezone_offset_ext() -> i16 {
     // returns 0 in a case of exception
     match Command::new("date").arg("+%z").output() {
@@ -117,10 +124,14 @@ pub fn get_local_timezone_offset_ext() -> i16 {
     }
 }
 
+/// Get local time zone offset in minutes
+///
 pub fn get_local_timezone_offset() -> i16 {
     get_local_timezone_offset_dst().0
 }
 
+/// Convert a given date:time to seconds from given epoch
+///
 pub fn seconds_from_epoch(
     epoch: u32,
     year: u32,
@@ -174,11 +185,13 @@ pub fn seconds_from_epoch(
     Ok(seconds)
 }
 
+/// Get local time zone offset in minutes and flag if DST is active
+///
 #[cfg(unix)]
 pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_default()
         .as_secs() as i64;
     let local_time = unsafe { localtime(&now) };
     let tz_offset = unsafe { (*local_time).tm_gmtoff };
@@ -187,6 +200,8 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     })
 }
 
+/// Get local time zone offset in minutes and flag if DST is active
+///
 #[cfg(target_os = "windows")]
 pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     let now = SystemTime::now()
