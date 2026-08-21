@@ -14,8 +14,8 @@ fn main() {
         simtime::seconds_from_epoch(1970, 2024, 2, 29, 13, 33, 35).unwrap_or(0),
         1709213615
     );
-    assert_eq!(simtime::convert_24_to_12(0).unwrap().0, 12);
-    assert_eq!(simtime::convert_24_to_12(13).unwrap().0, 1);
+    assert_eq!(simtime::convert_24_to_12(0).unwrap(), (12, false));
+    assert_eq!(simtime::convert_24_to_12(13).unwrap(), (1, true));
 
     assert_eq!(
         simtime::seconds_from_epoch(1970, 2025, 2, 29, 22, 33, 44).unwrap(),

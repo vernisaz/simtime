@@ -237,19 +237,19 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
     (off_min as _, unsafe { (*local_time).tm_isdst > 0 })
 }
 
-/// Converts a time string in "HH:MM" 24-hour format to "hh:MM AM/PM" 12-hour format.
+/// Converts a time in 24-hour format to (hour, PM) 12-hour format.
 ///
 /// # Arguments
-/// * `time_24` - A string slice containing the time in 24-hour format.
+/// * `time_24` - U32 containing the time in 24-hour format.
 ///
 /// # Returns
-/// * `Ok((h_12,P)` - The converted time in 12-hour format.
+/// * `Ok((h_12,P))` - The converted time in 12-hour format and true when time is PM.
 /// * `Err(String)` - An error message if the input is invalid.
 ///
 /// # Examples
 /// ```
-/// assert_eq!(convert_24_to_12(0).unwrap().0, 12);
-/// assert_eq!(convert_24_to_12(13).unwrap().0, 1);
+/// assert_eq!(convert_24_to_12(0).unwrap(), (12, false));
+/// assert_eq!(convert_24_to_12(13).unwrap(), (1, true);
 /// ```
 pub fn convert_24_to_12(hour_24: u32) -> Result<(u32, bool), Box<dyn Error>> {
     // Validate ranges
