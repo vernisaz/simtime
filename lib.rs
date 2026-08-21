@@ -249,7 +249,7 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
 /// # Examples
 /// ```
 /// assert_eq!(convert_24_to_12(0).unwrap(), (12, false));
-/// assert_eq!(convert_24_to_12(13).unwrap(), (1, true);
+/// assert_eq!(convert_24_to_12(13).unwrap(), (1, true));
 /// ```
 pub fn convert_24_to_12(hour_24: u32) -> Result<(u32, bool), Box<dyn Error>> {
     // Validate ranges
