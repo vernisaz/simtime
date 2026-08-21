@@ -254,16 +254,14 @@ pub fn get_local_timezone_offset_dst() -> (i16, bool) {
 pub fn convert_24_to_12(hour_24: u32) -> Result<(u32, bool), Box<dyn Error>> {
     // Validate ranges
     if hour_24 > 23 {
-        return Err("Hour must be 0-23".into());
+        Err("Hour must be 0-23".into())
+    } else {
+        // Convert to 12-hour format
+        Ok(match hour_24 % 12 {
+            0 => (12, false),
+            h => (h, hour_24 > 11),
+        })
     }
-
-    // Convert to 12-hour format
-    let hour_12 = match hour_24 % 12 {
-        0 => 12,
-        h => h,
-    };
-
-    Ok((hour_12, hour_24 > 11))
 }
 
 #[inline]
